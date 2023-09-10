@@ -44,9 +44,8 @@ module.exports.create = async(req, res) => {
             
         if(!user){
             const createUser = await User.create(req.body) ; //, (err, user)=>{
-                if(err){ console.log("Error in creating User while Signing Up") ; return ; }
                 
-                return res.redirect('/users/sign-in') ;
+            return res.redirect('/users/sign-in') ;
         }   
         else{
             return res.redirect('back') ;
