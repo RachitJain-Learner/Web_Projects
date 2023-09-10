@@ -1,8 +1,12 @@
 const express = require('express') ;
 const app = express() ;
+const cookieParser = require('cookie-parser') ;
 
 // const PORT = process.env.port || 4000 ;
 const PORT = 4000 ;
+
+app.use(express.json()) ;
+app.use(cookieParser()) ;
 
 // use express router
 app.use('/', require('./routes')) ;
