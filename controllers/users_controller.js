@@ -1,10 +1,26 @@
 const User = require('../models/user') ;
 
-module.exports.profile = (req, res) =>{
-    // return res.end('<h1>User Profile</h1>') ;
-    return res.render('profile', {
-        title: "Profile",
-    });
+module.exports.profile = async(req, res) =>{
+    try{
+        // only show profile, when user signed in
+        if(req.cookies.user_id){
+            let user = await User.findById(req.cookies.user_id) ;
+            if(user){
+                // return res.end('<h1>User Profile</h1>') ;
+                return res.render('user_profile', {
+                    title: "Profile",
+                    user: user
+                });
+            }
+            // if user not found, then also 
+            // redirect to sign in page
+        }
+        return res.redirect('/users/sign-in') ;    
+    
+    } catch(err){
+        console.log("Error: ", err) ;
+        return  ;
+    }
 }
 
 module.exports.views = (req, res) =>{
@@ -57,6 +73,29 @@ module.exports.create = async(req, res) => {
 }
 
 // sign In and create session for user
-module.exports.createSession = (req, res) => {
-    // todo later
+module.exports.createSession = async(req, res) => {
+    // steps to authenticate
+    // find the user from database
+    try{
+        const user = await User.findOne({email: req.body.email}) ;
+
+        // handle user found
+        if(user){
+            // handle password which don't match
+            if(user.password != req.body.password){
+                return res.redirect('back') ;
+            }
+
+            // handle session creation
+            res.cookie('user_id', user.id) ;
+            return res.redirect('/users/profile') ;
+        }
+        else{
+            // handle user not found
+            return res.redirect('back') ;
+        }
+    }catch(err){
+        console.log("Error: ", err) ;
+        return ;
+    }
 }
